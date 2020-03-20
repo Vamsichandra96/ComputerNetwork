@@ -2,6 +2,9 @@ import socket
 import os
 import random
 import functools
+import threading
+
+
 
 f = open("words.txt", "r")
 allwords = f.read().split()
@@ -16,7 +19,7 @@ def isguessed_word():
         '''After verifying that the letter is in the secret word we will iterate 
         through all the characters of the string and  find it's position and assign 
         that particular letter in the letters to be guessed and the game will continue'''
-        for k in range(l):
+        for k in range(len(secretWord)):
             if secretWord[k] == userInput:
                 answer[k] = userInput
     else:
@@ -71,22 +74,8 @@ class Player:
         super().__init__()
         self.wordsUsed.append(Secretword)
 
-
-
-
-secretWord = ""
-allUsers = {}
-player = ""
-userInput = ""
-data = ""
-
-sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-sock.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
-sock.bind(('',8888))
-sock.listen()
-print('server started')
-while 1:
-    conn,addr = sock.accept()
+def serveRequest(conn,addr):
+    global data,player,secretWord,allUsers,answer,alphabets,userInput
     print("connection is: " , addr)
     data = "Welcome to Hangman." + "\n" + "enter the value based on the following" + "\n" + "newUser = 1" + "\n" + "oldUser = 0"
     conn.send(data.encode())
@@ -162,3 +151,23 @@ while 1:
             conn.sendall(data.encode())
             temp = 0
             conn.close()
+
+
+
+secretWord = ""
+allUsers = {}
+player = ""
+userInput = ""
+data = ""
+answer = ""
+alphabets = []
+sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+sock.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
+sock.bind(('',8888))
+sock.listen()
+print('server started')
+while 1:
+    conn,addr = sock.accept()
+    c = 6
+    threading.Thread(target = serveRequest, args = (conn,addr)).start()
+
