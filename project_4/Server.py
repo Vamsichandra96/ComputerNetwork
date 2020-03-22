@@ -25,12 +25,14 @@ class Hangman:
         sock.listen()
         print('server started')
         while 1:
+            print('allUsers: ',  self.allUsers)
             conn,addr = sock.accept()
             chances = 6
             try:
                 threading.Thread(target = self.serveRequest, args = (conn,addr)).start()            
             except :
                 exit
+
     def serveRequest(self,conn,addr):
         secretWord = ""
         player = ""
@@ -46,7 +48,7 @@ class Hangman:
             we will call another function choosed_word'''
             nonlocal data,chances,answer
             if userInput in secretWord:
-                data +=  'good guess:' + "\n" 
+                data +=  'good guess:' + "\n"   
                 '''After verifying that the letter is in the secret word we will iterate 
                 through all the characters of the string and  find it's position and assign 
                 that particular letter in the letters to be guessed and the game will continue'''

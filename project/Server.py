@@ -63,7 +63,6 @@ def getLeaderBoard():
 def calculateScore():
     return (10 * len(secretWord)) - ((6 - c) * (len(secretWord)))
 
-
 class Player:
     playerScore = 0
     wordsUsed = []
