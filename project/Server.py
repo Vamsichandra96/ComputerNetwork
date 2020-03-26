@@ -32,10 +32,9 @@ def status():
     global data
     t = answer.count('_')
     if t==0:
-        data += 'congratulations Game won!!' + "\n" + "secret Word is: " + secretWord + "\n"
         score = calculateScore()
         player.playerScore += score
-        data += "Your score is: " + str(score) + "\n" + getLeaderBoard() + "\n"
+        data += "congratulations Game won!! \n secret Word is: " + secretWord + "\n" + "Your score is: " + str(score) + "\n" + "LeaderBoard: " + getLeaderBoard() + "\n"
         return 1
     if c==0:
         score = calculateScore()
@@ -81,7 +80,7 @@ data = ""
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
-sock.bind(('',8888))
+sock.bind(('127.0.0.1',8888))
 sock.listen()
 print('server started')
 while 1:
@@ -93,8 +92,6 @@ while 1:
     while temp:
         data = conn.recv(1024)
         data = data.decode()
-        # if(data == "quit"):
-        #     break
         if(data == "0"):
             conn.send(b'enter userName')
             while 1:
@@ -113,7 +110,6 @@ while 1:
                     break
                 else:
                     conn.send(b'user not available try again.Enter 1 to register as new player')
-
                 if(temp == 0):
                     break
         if(data == "1"):
@@ -125,7 +121,6 @@ while 1:
                     conn.send(b"UserName not available.Try another name")
                 else:
                     secretWord = random.choice(allwords)
-                    # data = Player(secretWord)
                     allUsers[data] = Player(secretWord)
                     player = allUsers[data]
                     temp = 0
@@ -155,9 +150,8 @@ while 1:
             alphabets.remove(userInput)
             isguessed_word()
         else:
-            data += 'oops! you have already guessed that letter.try again: ' + (' '.join(answer))
+            data += 'oops! you have already guessed that letter.try again: \n'
         flag = status()
         if flag:
             conn.sendall(data.encode())
-            temp = 0
             conn.close()

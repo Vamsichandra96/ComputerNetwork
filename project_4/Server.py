@@ -1,5 +1,4 @@
 import socket
-import os
 import random
 import functools
 import threading
@@ -9,31 +8,59 @@ allwords = f.read().split()
 f.close()
 
 class Hangman:
+    """This is a class for Hangman Game."""
+
     class Player:
+        """
+        This is a class for Player who has the score obtained and words guessed.
+        
+        Attributes: 
+            secretword(String):Randomly generated word.
+
+        """
+
         playerScore = 0
         wordsUsed = []
         def __init__(self,Secretword):
+            """ 
+            The constructor for Player class. 
+    
+            Parameters: 
+                secretword(String):Randomly generated word.  
+            
+            """
+
             super().__init__()
             self.wordsUsed.append(Secretword)
 
     def __init__(self):
+        """The constructor for Hangman class."""
+
         super().__init__()
         self.allUsers = {}
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
-        sock.bind(('',8888))
+        sock.bind(('127.0.0.1',8888))
         sock.listen()
         print('server started')
         while 1:
             print('allUsers: ',  self.allUsers)
             conn,addr = sock.accept()
-            chances = 6
             try:
-                threading.Thread(target = self.serveRequest, args = (conn,addr)).start()            
-            except :
-                exit
+                threading.Thread(target = self.serveRequest, args = (conn,addr)).start()
+            except Exception:
+                exit()
 
     def serveRequest(self,conn,addr):
+        """ 
+        The function to start the thread for the given conn,addr. 
+  
+        Parameters: 
+            conn (Conn): The response to be sent to.
+            addr (tup) : The address of the conn.
+          
+        """
+        
         secretWord = ""
         player = ""
         userInput = ""
@@ -44,27 +71,36 @@ class Hangman:
         chances = 6
         
         def isguessed_word():
-            '''if the letter guessed is in the alphabets and also in the secret word then 
-            we will call another function choosed_word'''
+            """
+            If the letter guessed is in the alphabets and also in the secret word then 
+            we will call another function choosed_word
+            
+            """
+            
             nonlocal data,chances,answer
             if userInput in secretWord:
-                data +=  'good guess:' + "\n"   
-                '''After verifying that the letter is in the secret word we will iterate 
-                through all the characters of the string and  find it's position and assign 
-                that particular letter in the letters to be guessed and the game will continue'''
-                for k in range(len(secretWord)):
-                    if secretWord[k] == userInput:
+                data +=  'good guess:' + "\n"
+                """After verifying that the letter is in the secret word we will iterate
+                through all the characters of the string and  find it's position and assign
+                that particular letter in the letters to be guessed and the game will continue.
+                
+                """
+                
+                for k,l in enumerate(secretWord):
+                    if l == userInput:
                         answer[k] = userInput
             else:
-                '''if the guessed letter is not in the secret word then one life will be 
-                decreased and the game will continue '''
+                """If the guessed letter is not in the secret word then one life will be
+                decreased and the game will continue.
+                """
+                
                 chances -= 1
                 data += 'Oops!that letter is not in my word.Try again. ' + "\n"
 
         def status():
-            '''since we have to end the game if all the letters are guessed correctly 
-            we will count the number of letters to be guessed after every attempt and 
-            if the number is 0 then the loop will break  saying that he won!'''
+            """since we have to end the game if all the letters are guessed correctly
+            we will count the number of letters to be guessed after every attempt and
+            if the number is 0 then the loop will break  saying that he won!."""
             nonlocal data,player
             t = answer.count('_')
             if t == 0:
@@ -78,8 +114,8 @@ class Hangman:
                 return 1
             if chances == 0:
                 if (userName not in self.allUsers):
-                    self.allUsers[userName] = self.userName(secretWord)
-                    player = self.allUsers[player]
+                    self.allUsers[userName] = self.Player(secretWord)
+                    player = self.allUsers[userName]
                 score = calculateScore()
                 player.playerScore += score
                 data += 'sorry you have run out of lives.The word is ' + secretWord + "\n your score is "  + str(score) + "\n Game Lost " + "\n" + getLeaderBoard() + "\n"
@@ -155,7 +191,7 @@ class Hangman:
         
         for i in range(26):
             alphabets.append(chr(i+97))
-        
+
         length = len(secretWord)
         answer = ['_']*length
         print("secretWord is: ",secretWord)
@@ -166,7 +202,8 @@ class Hangman:
             userInput = userInput.lower()
             data = "------------------------------------" + "\n"
             if userInput in alphabets:
-                '''we will verify if the guessed letter is in alphabets and remove it accordingly'''
+                """we will verify if the guessed letter is in alphabets and remove it accordingly"""
+
                 alphabets.remove(userInput)
                 isguessed_word()
             else:
