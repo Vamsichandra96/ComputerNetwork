@@ -22,10 +22,10 @@ class Hangman:
         playerScore = 0
         wordsUsed = []
         def __init__(self,Secretword):
-            """ 
+            """
             The constructor for Player class.
 
-            Parameters: 
+            Parameters:
                 secretword(String):Randomly generated word.
 
             """
